@@ -1,0 +1,56 @@
+Executive Report - Mariana Ripoll
+
+
+En este proyecto desarrollé y evalué una estrategia sistemática para BTCUSDT en velas de 5 
+minutos, operando en long y short sin apalancamiento y considerando un costo de transacción de 
+0.125% por lado. La lógica principal que seguí fue combinar tres indicadores técnicos (RSI, MACD y 
+Bollinger Bands) y abrir posiciones únicamente cuando existía confirmación de al menos 2 de los 3 
+indicadores en la misma dirección. La razón de diseñarlo así fue reducir la cantidad de operaciones 
+y priorizar señales de mayor calidad, ya que en un timeframe de 5 minutos el ruido es alto y una 
+señal aislada suele ser poco confiable. Para evitar sobreajuste, utilicé walk-forward analysis como 
+metodología principal y optimicé parámetros con un enfoque bayesiano (Optuna), usando como 
+función objetivo el Calmar Ratio, porque me interesaba maximizar retorno ajustado por drawdown y 
+no solo retorno bruto.
+
+
+Trabajé con dos datasets uno de entrenamiento (train) y otro de prueba (test). Usé el train para 
+calibrar los parámetros y el test para validar desempeño fuera de muestra. El archivo de test tiene 
+un gap de 122 días sin información, lo cual no afecta directamente el cálculo del PnL por barra si el 
+backtest recorre precios en orden, pero sí distorsiona métricas anualizadas porque comprime el 
+periodo efectivo y puede inflar artificialmente ratios como el Calmar y el retorno anualizado. Por 
+esta razón, cuando presenté resultados del test final explicaré que los números se ven muy altos, 
+pero deben interpretarse con cuidado por el periodo efectivo corto y el bajo número de operaciones.
+
+En cuanto a resultados el desempeño más importante lo tomé del walk-forward out-of-sample 
+agregado, porque integra todas las ventanas fuera de muestra y genera una curva de equity 
+continua a lo largo del periodo. En esa evaluación OOS (walk-forward) obtuve un Sharpe Ratio de 
+0.158 y un Sortino Ratio de 0.140 positivo en términos de retorno ajustado por riesgo. El Calmar 
+Ratio fue 0.281 y el máximo drawdown fue de 2.94%, lo que sugiere que el control de caídas 
+funcionó bien, probablemente influido por el uso de stop-loss y por una frecuencia de operación 
+baja. El win rate fue 47.6%, ligeramente por debajo de 50%, pero aun así el retorno total del periodo 
+OOS fue de +0.64% con un retorno anualizado de +0.83%, lo que significa que el sistema no 
+depende de ganar muchas veces, sino de una relación de ganancias/pérdidas suficientemente 
+asimétrica. En total, en walk-forward realicé 147 operaciones fuera de muestra, por lo que estos 
+resultados tienen mucho más soporte estadístico que cualquier ventana aislada o que el test final.
+
+Al aplicar  los mejores parámetros de la última ventana walk-forward al conjunto de test, los 
+resultados reportados fueron considerablemente más altos: Sharpe Ratio de 3.67, Sortino Ratio de 
+11.82 y un Calmar Ratio de 64.31, con un máximo drawdown de 3.26%. En ese test el win rate fue 
+50.0% y el retorno total fue +4.99%, con un retorno anualizado de +209.7%. Sin embargo, este 
+desempeño se construyó con solo 6 operaciones, y además el periodo efectivo de evaluación fue 
+aproximadamente un mes (mayo–junio 2024) debido al gap de 122 días, lo que comprime el 
+denominador de la anualización y hace que los indicadores anualizados y el Calmar se vean 
+exagerados. En términos de costos, en el test pagué $35.75 en comisiones sobre esas 6 
+operaciones, lo cual el mismo reporte cuantifica como un arrastre relevante pero manejable a esa 
+frecuencia, de hecho, comparado contra una ganancia aproximada de $500 sobre $10,000, 
+representa alrededor de 7% del profit bruto, lo cual confirma que los costos sí importan incluso con 
+pocos trades.
+
+El walk-forward también me permitió ver la distribución de resultados por ventanas, y ahí encontré 
+que 36 de 78 ventanas (46%) tuvieron Calmar OOS positivo, 33 de 78 (42%) fueron negativas y 8 
+de 78 (10%) no generaron operaciones. Esto refuerza mi conclusión, el sistema no creo que sea el 
+mejor, ni consiste en todas las semanas, sino que tiene un margen pequeño que aparece con más 
+claridad al agregarse muchas ventanas. En conjunto, lo que concluyo a partir de estos números es 
+que la estrategia tiene una ventaja real pero moderada en la evaluación walk-forward, y que los 
+resultados del test final, aunque altos, no son suficientes por sí solos por la distorsión temporal del 
+dataset.
