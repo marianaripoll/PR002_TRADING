@@ -1,0 +1,27 @@
+{
+  "best_params": {
+    "rsi_period": 13,
+    "rsi_ob": 74.36766023637811,
+    "rsi_os": 34.76428936360437,
+    "macd_fast": 9,
+    "macd_slow": 21,
+    "macd_signal": 7,
+    "bb_period": 12,
+    "bb_std": 1.7422992503564934,
+    "sl": 0.043756071580091815,
+    "tp": 0.06709709203803342,
+    "n_btc": 0.037997099563391576
+  },
+  "test_metrics": {
+    "sharpe_ratio": 3.6661,
+    "sortino_ratio": 11.8176,
+    "calmar_ratio": 64.3084,
+    "max_drawdown": 0.0326,
+    "win_rate": 0.5,
+    "total_return": 0.0499,
+    "annualised_return": 2.0966,
+    "total_trades": 6,
+    "avg_pnl": 82.6135,
+    "lost_to_com": 35.7474
+  }
+}
